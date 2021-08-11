@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:untitled3/models/items.dart';
+import 'package:untitled3/widgets/Homepageitems.dart';
 import 'package:untitled3/widgets/appdrawer.dart';
 
 // ignore: must_be_immutable
@@ -10,6 +12,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final list = List.generate(20, (index) => Models.productList[0]);
     return Scaffold(
       appBar: AppBar(
         title: Text("Our First App"),
@@ -17,7 +20,16 @@ class HomePage extends StatelessWidget {
       drawer: AppDrawer(),
       body: Center(
         child: Container(
-          child: Text("Welcome to $number $course Crash Course $day"),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ListView.builder(
+                itemCount: list.length,
+                itemBuilder: (context, index) {
+                  return HomePageItems(
+                    items: list[index],
+                  );
+                }),
+          ),
         ),
       ),
     );
