@@ -8,6 +8,7 @@ class HomePageItems extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
+        onTap: () {},
         leading: Image.network(items.image),
         title: Text(items.name),
         subtitle: Text(items.desc),

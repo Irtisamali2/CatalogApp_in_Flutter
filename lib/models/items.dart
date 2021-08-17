@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class MyItems {
   final int id;
   final String name;
@@ -6,24 +8,100 @@ class MyItems {
   final String color;
   final String image;
 
-  MyItems(
-      {required this.id,
-      required this.name,
-      required this.desc,
-      required this.price,
-      required this.color,
-      required this.image});
+  MyItems(this.id, this.name, this.desc, this.price, this.color, this.image);
+
+  // factory MyItems.fromMap(Map<String, dynamic> map) {
+  //   return MyItems(
+  //       id: map["id"],
+  //       name: map["name"],
+  //       desc: map["desc"],
+  //       price: map["price"],
+  //       color: map["color"],
+  //       image: map["image"]);
+  // }
+  // toMap() => {
+  //       "id": id,
+  //       "name": name,
+  //       "desc": desc,
+  //       "price": price,
+  //       "color": color,
+  //       "image": image
+  //     };
+
+  MyItems copyWith({
+    int? id,
+    String? name,
+    String? desc,
+    int? price,
+    String? color,
+    String? image,
+  }) {
+    return MyItems(
+      id ?? this.id,
+      name ?? this.name,
+      desc ?? this.desc,
+      price ?? this.price,
+      color ?? this.color,
+      image ?? this.image,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'desc': desc,
+      'price': price,
+      'color': color,
+      'image': image,
+    };
+  }
+
+  factory MyItems.fromMap(Map<String, dynamic> map) {
+    return MyItems(
+      map['id'],
+      map['name'],
+      map['desc'],
+      map['price'],
+      map['color'],
+      map['image'],
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory MyItems.fromJson(String source) =>
+      MyItems.fromMap(json.decode(source));
+
+  @override
+  String toString() {
+    return 'MyItems(id: $id, name: $name, desc: $desc, price: $price, color: $color, image: $image)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is MyItems &&
+        other.id == id &&
+        other.name == name &&
+        other.desc == desc &&
+        other.price == price &&
+        other.color == color &&
+        other.image == image;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^
+        name.hashCode ^
+        desc.hashCode ^
+        price.hashCode ^
+        color.hashCode ^
+        image.hashCode;
+  }
 }
 
 class Models {
-  static final productList = [
-    MyItems(
-        id: 1,
-        name: "iPhone 12 Pro",
-        desc: "Apple iPhone 12th generation",
-        price: 999,
-        color: "#33505a",
-        image:
-            "https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-12-pro-blue-hero?wid=940&hei=1112&fmt=png-alpha&qlt=80&.v=1604021661000")
-  ];
+  static List<MyItems> productList = [];
 }

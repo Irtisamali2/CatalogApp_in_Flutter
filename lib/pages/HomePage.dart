@@ -1,18 +1,38 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:untitled3/models/items.dart';
 import 'package:untitled3/widgets/Homepageitems.dart';
 import 'package:untitled3/widgets/appdrawer.dart';
 
 // ignore: must_be_immutable
-class HomePage extends StatelessWidget {
-  int day = 10;
-  double number = 2.2;
-  String course = "Flutter";
-  num a = 10.0;
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    decode();
+  }
+
+  decode() async {
+    final json = await rootBundle.loadString("assets/files/catalog.json");
+    print(json);
+    var itemProducts = jsonDecode(json);
+    print(itemProducts);
+    var products = itemProducts["products"];
+    print(products);
+    Models.productList =
+        List.from(products).map((items) => MyItems.fromMap(items)).toList();
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
-    final list = List.generate(20, (index) => Models.productList[0]);
     return Scaffold(
       appBar: AppBar(
         title: Text("Our First App"),
@@ -23,10 +43,10 @@ class HomePage extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: ListView.builder(
-                itemCount: list.length,
+                itemCount: Models.productList.length,
                 itemBuilder: (context, index) {
                   return HomePageItems(
-                    items: list[index],
+                    items: Models.productList[index],
                   );
                 }),
           ),
