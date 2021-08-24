@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:velocity_x/velocity_x.dart';
+
 import 'package:untitled3/models/items.dart';
 import 'package:untitled3/widgets/Homepageitems.dart';
 import 'package:untitled3/widgets/appdrawer.dart';
@@ -34,24 +36,98 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Our First App"),
-      ),
-      drawer: AppDrawer(),
-      body: Center(
+      body: SafeArea(
         child: Container(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ListView.builder(
-                itemCount: Models.productList.length,
-                itemBuilder: (context, index) {
-                  return HomePageItems(
-                    items: Models.productList[index],
-                  );
-                }),
+          padding: Vx.m20,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ShopHeader(),
+              if (Models.productList != null && Models.productList.isNotEmpty)
+                ProductList().expand()
+              else
+                Center(
+                  child: CircularProgressIndicator(),
+                )
+            ],
           ),
         ),
       ),
     );
+  }
+}
+
+class ShopHeader extends StatelessWidget {
+  const ShopHeader({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        "Shop".text.xl5.bold.make(),
+        "Featured Products".text.xl3.make()
+      ],
+    );
+  }
+}
+
+class ProductList extends StatefulWidget {
+  ProductList({Key? key}) : super(key: key);
+
+  @override
+  _ProductListState createState() => _ProductListState();
+}
+
+class _ProductListState extends State<ProductList> {
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+        itemCount: Models.productList.length,
+        itemBuilder: (context, index) {
+          final items = Models.productList[index];
+          return Productdetails(
+            item: items,
+          );
+        });
+  }
+}
+
+class Productdetails extends StatelessWidget {
+  final MyItems item;
+  const Productdetails({
+    Key? key,
+    required this.item,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return VxBox(
+        child: Row(
+      children: [
+        Image.network(item.image).box.p12.make().w32(context),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            item.name.text.bold.make(),
+            item.desc.text.color(Colors.black).caption(context).make(),
+            10.heightBox,
+            ButtonBar(
+              buttonPadding: Vx.m0,
+              alignment: MainAxisAlignment.spaceBetween,
+              children: [
+                "\$${item.price}".text.make(),
+                ElevatedButton(
+                    style: ButtonStyle(
+                        shape: MaterialStateProperty.all(StadiumBorder())),
+                    onPressed: () {},
+                    child: "Buy".text.make())
+              ],
+            ).pOnly(right: 10)
+          ],
+        ).expand()
+      ],
+    )).square(140).rounded.color(Colors.deepPurple).make().py12();
   }
 }
