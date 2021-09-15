@@ -1,12 +1,9 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:untitled3/pages/productdetailsPage.dart';
 import 'package:velocity_x/velocity_x.dart';
-
 import 'package:untitled3/models/items.dart';
-import 'package:untitled3/widgets/Homepageitems.dart';
-import 'package:untitled3/widgets/appdrawer.dart';
 
 // ignore: must_be_immutable
 class HomePage extends StatefulWidget {
@@ -48,7 +45,7 @@ class _HomePageState extends State<HomePage> {
               else
                 Center(
                   child: CircularProgressIndicator(),
-                )
+                ).expand()
             ],
           ),
         ),
@@ -66,7 +63,7 @@ class ShopHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         "Shop".text.xl5.bold.make(),
-        "Featured Products".text.xl3.make()
+        "Featured Products".text.caption(context).color(Colors.black).xl3.make()
       ],
     );
   }
@@ -86,8 +83,18 @@ class _ProductListState extends State<ProductList> {
         itemCount: Models.productList.length,
         itemBuilder: (context, index) {
           final items = Models.productList[index];
-          return Productdetails(
-            item: items,
+          return InkWell(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ProductDetailsPage(
+                            items: items,
+                          )));
+            },
+            child: Productdetails(
+              item: items,
+            ),
           );
         });
   }
@@ -105,7 +112,9 @@ class Productdetails extends StatelessWidget {
     return VxBox(
         child: Row(
       children: [
-        Image.network(item.image).box.p12.make().w32(context),
+        Hero(
+            tag: Key(item.id.toString()),
+            child: Image.network(item.image).box.p12.make().w32(context)),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,

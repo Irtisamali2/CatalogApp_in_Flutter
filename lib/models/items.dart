@@ -10,24 +10,6 @@ class MyItems {
 
   MyItems(this.id, this.name, this.desc, this.price, this.color, this.image);
 
-  // factory MyItems.fromMap(Map<String, dynamic> map) {
-  //   return MyItems(
-  //       id: map["id"],
-  //       name: map["name"],
-  //       desc: map["desc"],
-  //       price: map["price"],
-  //       color: map["color"],
-  //       image: map["image"]);
-  // }
-  // toMap() => {
-  //       "id": id,
-  //       "name": name,
-  //       "desc": desc,
-  //       "price": price,
-  //       "color": color,
-  //       "image": image
-  //     };
-
   MyItems copyWith({
     int? id,
     String? name,
