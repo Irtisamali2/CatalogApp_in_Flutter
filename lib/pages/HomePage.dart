@@ -1,11 +1,13 @@
-import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:untitled3/pages/productdetailsPage.dart';
-import 'package:velocity_x/velocity_x.dart';
-import 'package:untitled3/models/items.dart';
+// ignore_for_file: deprecated_member_use
 
-// ignore: must_be_immutable
+import 'package:flutter/material.dart';
+import 'dart:io';
+
+import 'package:image_picker/image_picker.dart';
+import 'package:velocity_x/src/extensions/string_ext.dart';
+import 'package:velocity_x/src/flutter/padding.dart';
+import 'package:velocity_x/src/flutter/sizedbox.dart';
+
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
@@ -13,130 +15,73 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   @override
-  void initState() {
-    // TODO: implement initState
-    decode();
-  }
-
-  decode() async {
-    final json = await rootBundle.loadString("assets/files/catalog.json");
-    print(json);
-    var itemProducts = jsonDecode(json);
-    print(itemProducts);
-    var products = itemProducts["products"];
-    print(products);
-    Models.productList =
-        List.from(products).map((items) => MyItems.fromMap(items)).toList();
-    setState(() {});
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Container(
-          padding: Vx.m20,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ShopHeader(),
-              if (Models.productList != null && Models.productList.isNotEmpty)
-                ProductList().expand()
-              else
-                Center(
-                  child: CircularProgressIndicator(),
-                ).expand()
-            ],
-          ),
+        body: Center(
+      child: Container(
+        padding: EdgeInsets.all(8),
+        child: Column(
+          children: [
+            Container(
+                child: _load == true
+                    ? Container(
+                        height: 500,
+                        width: 300,
+                        decoration: BoxDecoration(
+                            image:
+                                DecorationImage(image: FileImage(imageFile))),
+                      )
+                    : Container(
+                        height: 500,
+                        width: 300,
+                        decoration: BoxDecoration(color: Colors.grey),
+                      )),
+            Container(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                          style: ButtonStyle(
+                              shape:
+                                  MaterialStateProperty.all(StadiumBorder())),
+                          onPressed: () {
+                            getImage(ImageSource.camera);
+                          },
+                          child: "Camera".text.bold.xl.make())
+                      .py(16)
+                      .wh(100, 50),
+                  ElevatedButton(
+                          style: ButtonStyle(
+                              shape:
+                                  MaterialStateProperty.all(StadiumBorder())),
+                          onPressed: () {
+                            getImage(ImageSource.gallery);
+                          },
+                          child: "Gallery".text.bold.xl.make())
+                      .py(16)
+                      .wh(100, 50)
+                ],
+              ),
+            )
+          ],
         ),
       ),
-    );
+    ));
   }
-}
 
-class ShopHeader extends StatelessWidget {
-  const ShopHeader({Key? key}) : super(key: key);
+  late File imageFile;
+  PickedFile? pickedImage = null;
+  bool _load = false;
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        "Shop".text.xl5.bold.make(),
-        "Featured Products".text.caption(context).color(Colors.black).xl3.make()
-      ],
-    );
-  }
-}
+  final picker = ImagePicker();
 
-class ProductList extends StatefulWidget {
-  ProductList({Key? key}) : super(key: key);
-
-  @override
-  _ProductListState createState() => _ProductListState();
-}
-
-class _ProductListState extends State<ProductList> {
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-        itemCount: Models.productList.length,
-        itemBuilder: (context, index) {
-          final items = Models.productList[index];
-          return InkWell(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ProductDetailsPage(
-                            items: items,
-                          )));
-            },
-            child: Productdetails(
-              item: items,
-            ),
-          );
-        });
-  }
-}
-
-class Productdetails extends StatelessWidget {
-  final MyItems item;
-  const Productdetails({
-    Key? key,
-    required this.item,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return VxBox(
-        child: Row(
-      children: [
-        Hero(
-            tag: Key(item.id.toString()),
-            child: Image.network(item.image).box.p12.make().w32(context)),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            item.name.text.bold.make(),
-            item.desc.text.color(Colors.black).caption(context).make(),
-            10.heightBox,
-            ButtonBar(
-              buttonPadding: Vx.m0,
-              alignment: MainAxisAlignment.spaceBetween,
-              children: [
-                "\$${item.price}".text.make(),
-                ElevatedButton(
-                    style: ButtonStyle(
-                        shape: MaterialStateProperty.all(StadiumBorder())),
-                    onPressed: () {},
-                    child: "Buy".text.make())
-              ],
-            ).pOnly(right: 10)
-          ],
-        ).expand()
-      ],
-    )).square(140).rounded.color(Colors.deepPurple).make().py12();
+  Future getImage(ImageSource source) async {
+    final pickedFile = await picker.getImage(source: source);
+    setState(() {
+      imageFile = File(pickedFile!.path);
+      _load = true;
+    });
+    Navigator.pop(context);
   }
 }
